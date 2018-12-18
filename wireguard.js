@@ -22,7 +22,6 @@ const runCommand = async cmd => {
         console.error(err);
         return reject(stderr);
       } else {
-        // console.log(stdout);
         return resolve(stdout);
       }
     });
@@ -101,9 +100,6 @@ const compareWithLastFlow = (flow, lastFlow) => {
 };
 
 let firstFlow = true;
-let libevListed = false;
-let portsForLibev = [];
-let portsForLibevObj = {};
 
 const startUp = async () => {
   const result = await runCommand('wg show wg0 transfer');
@@ -114,7 +110,7 @@ const startUp = async () => {
   const accounts = await db.listAccount();
   for(const account of accounts) {
     if(!peers.includes(account.password)) {
-      sendAddMessage(account.port, account.password);
+      await sendAddMessage(account.port, account.password);
     }
   }
 };
@@ -199,13 +195,11 @@ const getGfwStatus = () => {
   req.end();
 };
 
-// connect();
 startUp();
-// resend();
 setInterval(() => {
   resend();
   getGfwStatus();
-}, 15 * 1000);
+}, 60 * 1000);
 
 const addAccount = (port, password) => {
   return db.addAccount(port, password).then(success => {

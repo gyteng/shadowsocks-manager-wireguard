@@ -1,4 +1,4 @@
-# shadowsocks-manager-tiny
+# shadowsocks-manager-wireguard
 
 ## 使用方法
 
