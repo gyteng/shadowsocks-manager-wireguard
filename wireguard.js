@@ -55,8 +55,8 @@ const sendDelMessage = async (port, password) => {
     await runCommand(`wg set wg0 peer ${ password } remove`);
     return Promise.resolve('ok');
   }
-  console.log('del: ' + accounts[port]);
   const accounts = await db.listAccountObj();
+  console.log('del: ' + accounts[port]);
   await runCommand(`wg set wg0 peer ${ accounts[port] } remove`);
   return Promise.resolve('ok');
 };
