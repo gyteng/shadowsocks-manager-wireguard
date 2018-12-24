@@ -8,8 +8,21 @@ const http = require('http');
 
 let clientIp = [];
 
-const netConfig = process.argv[2] || '10.100.0.0/16';
-const managerConfig = process.argv[3] || '0.0.0.0:6002';
+let gateway = '10.100.0.1';
+let managerConfig = '0.0.0.0:6002';
+let interface = 'wg0';
+const argv = process.argv.filter((ele, index) => index > 1);
+argv.forEach((f, index) => {
+  if(f === '--manager' || f === '-m') {
+    managerConfig = argv[index + 1];
+  }
+  if(f === '--gateway' || f === '-g') {
+    gateway = argv[index + 1];
+  }
+  if(f === '--interface' || f === '-i') {
+    interface = argv[index + 1];
+  }
+});
 const mPort = +managerConfig.split(':')[1];
 client.bind(mPort);
 
@@ -32,7 +45,7 @@ const sendAddMessage = async (port, password) => {
   console.log('add: ' + password.trim());
   const a = port % 254;
   const b = (port - a) / 254;
-  await runCommand(`wg set wg0 peer ${ password.trim() } allowed-ips ${ netConfig.split('.')[0] }.${ netConfig.split('.')[1] }.${ b }.${ a + 1 }/32`);
+  await runCommand(`wg set ${ interface } peer ${ password.trim() } allowed-ips ${ gateway.split('.')[0] }.${ gateway.split('.')[1] }.${ b }.${ a + 1 }/32`);
   return Promise.resolve('ok');
 };
 
@@ -52,12 +65,12 @@ const sendAddMessage = async (port, password) => {
 const sendDelMessage = async (port, password) => {
   if(password) {
     console.log('del: ' + password);
-    await runCommand(`wg set wg0 peer ${ password } remove`);
+    await runCommand(`wg set ${ interface } peer ${ password } remove`);
     return Promise.resolve('ok');
   }
   const accounts = await db.listAccountObj();
   console.log('del: ' + accounts[port]);
-  await runCommand(`wg set wg0 peer ${ accounts[port] } remove`);
+  await runCommand(`wg set ${ interface } peer ${ accounts[port] } remove`);
   return Promise.resolve('ok');
 };
 
@@ -102,7 +115,7 @@ const compareWithLastFlow = (flow, lastFlow) => {
 let firstFlow = true;
 
 const startUp = async () => {
-  const result = await runCommand('wg show wg0 transfer');
+  const result = await runCommand(`wg show ${ interface } transfer`);
   const peers = result.split('\n').filter(f => f).map(m => {
     const data = m.split('\t');
     return data[0];
@@ -116,7 +129,7 @@ const startUp = async () => {
 };
 
 const resend = async () => {
-  const result = await runCommand('wg show wg0 transfer');
+  const result = await runCommand(`wg show ${ interface } transfer`);
   const peers = result.split('\n').filter(f => f).map(m => {
     const data = m.split('\t');
     return {
