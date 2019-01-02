@@ -6,8 +6,6 @@ const db = require('./db');
 const rop = require('./runOtherProgram');
 const http = require('http');
 
-let clientIp = [];
-
 let gateway = '10.100.0.1';
 let managerConfig = '0.0.0.0:6002';
 let interface = 'wg0';
@@ -252,7 +250,7 @@ const getFlow = (options) => {
 
 const getVersion = () => {
   return Promise.resolve({
-    version: version + 'T',
+    version: version + 'W',
     isGfw: !!(isGfw > 5),
   });
 };

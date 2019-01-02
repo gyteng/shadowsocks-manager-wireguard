@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-let dataFilePath = '~/data.json';
+let dataFilePath = './data.json';
 const argv = process.argv.filter((ele, index) => index > 1);
 argv.forEach((f, index) => {
   if(f === '--db' || f === '-d') {
