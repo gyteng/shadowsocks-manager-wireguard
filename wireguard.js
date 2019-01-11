@@ -3,7 +3,6 @@ const exec = require('child_process').exec;
 const client = dgram.createSocket('udp4');
 const version = require('./package.json').version;
 const db = require('./db');
-const rop = require('./runOtherProgram');
 const http = require('http');
 
 let gateway = '10.100.0.1';
@@ -255,19 +254,15 @@ const getVersion = () => {
   });
 };
 
-const getClientIp = port => {
-  // clientIp = clientIp.filter(f => {
-  //   return Date.now() - f.time <= 15 * 60 * 1000;
-  // });
-  // const result = [];
-  // clientIp.filter(f => {
-  //   return Date.now() - f.time <= 15 * 60 * 1000 && f.port === port;
-  // }).map(m => {
-  //   return m.ip;
-  // }).forEach(f => {
-  //   if(result.indexOf(f) < 0) { result.push(f); }
-  // });
-  return Promise.resolve([]);
+const getClientIp = async port => {
+  const accounts = await db.listAccountObj();
+  const account = accounts[port];
+  if(!account) {
+    return [];
+  }
+  const result = await runCommand(`wg show ${ interface } dump | grep ${ account }`);
+  const client = result.split(/\s/)[2];
+  return Promise.resolve([ client.split(':')[0] ]);
 };
 
 exports.addAccount = addAccount;

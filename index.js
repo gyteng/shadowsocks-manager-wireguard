@@ -8,4 +8,3 @@ process.on('uncaughtException', err => {
 
 require('./wireguard');
 require('./server');
-// require('./run');
