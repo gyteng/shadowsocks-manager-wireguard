@@ -46,19 +46,6 @@ const sendAddMessage = async (port, password) => {
   return Promise.resolve('ok');
 };
 
-// setInterval(() => {
-//   for(let i = 0; i < 10; i++) {
-//     if(!addMessageCache.length && !libevListed) { continue; }
-//     const message = addMessageCache.shift();
-//     if(!message) { continue; }
-//     const exists = !!portsForLibevObj[message.port];
-//     if(exists) { continue; }
-//     console.log(`增加ss端口: ${ message.port } ${ message.password }`);
-//     client.send(`add: {"server_port": ${ message.port }, "password": "${ message.password }"}`, port, host);
-//     rop.run(message.port, message.password);
-//   }
-// }, 1000);
-
 const sendDelMessage = async (port, password) => {
   if(password) {
     console.log('del: ' + password);
@@ -219,12 +206,11 @@ const addAccount = (port, password) => {
   });
 };
 
-const removeAccount = port => {
-  return db.removeAccount(port).then(() => {
-    return sendDelMessage(port);
-  }).then(() => {
-    return { port };
-  });
+const removeAccount = async port => {
+  const password = await db.listAccountObj().then(s => s[port]);
+  await db.removeAccount(port);
+  await sendDelMessage(port, password);
+  return { port };
 };
 
 const changePassword = (port, password) => {
