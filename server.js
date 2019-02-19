@@ -16,7 +16,6 @@ argv.forEach((f, index) => {
 const host = managerConfig.split(':')[0];
 const port = +managerConfig.split(':')[1];
 
-
 const dateString = () => {
   const appendZero = (value, length) => {
     if(value.toString().length < length) {
@@ -81,11 +80,11 @@ const receiveCommand = (data, code) => {
   }
 };
 
-const pack = (data) => {
+const pack = data => {
   const message = JSON.stringify(data);
   const dataBuffer = Buffer.from(message);
   const length = dataBuffer.length;
-  const lengthBuffer = Buffer.from(('0000' + length.toString(16)).substr(-4), 'hex');
+  const lengthBuffer = Buffer.from(('0000000000000000' + length.toString(16)).substr(-8), 'hex');
   const pack = Buffer.concat([lengthBuffer, dataBuffer]);
   return pack;
 };

@@ -9,4 +9,3 @@ node index --gateway 10.100.0.1
            --interface wg0
            --db /your/data.json
 ```
-
