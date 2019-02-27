@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-manager-wireguard",
-  "version": "0.31.0",
+  "version": "0.31.3",
   "description": "",
   "main": "index.js",
   "author": "Gu Yuteng <igyteng@gmail.com>",

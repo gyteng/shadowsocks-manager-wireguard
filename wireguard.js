@@ -248,6 +248,9 @@ const getClientIp = async port => {
   }
   const result = await runCommand(`wg show ${ interface } dump | grep ${ account }`);
   const client = result.split(/\s/)[2];
+  if(client.trim() === '(none)') {
+    return Promise.resolve([]);
+  }
   return Promise.resolve([ client.split(':')[0] ]);
 };
 
